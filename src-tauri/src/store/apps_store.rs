@@ -28,10 +28,13 @@ impl AppsStore {
     }
 
     pub fn update_app(&mut self, app: PublishableApp) {
-        let store_app = self.apps.iter_mut().enumerate().find(|(_, a)| { a.id() == app.id() });
+        let existing_index = self.apps.iter_mut()
+            .enumerate()
+            .find(|(_, a)| { a.id == app.id })
+            .map(|(index, _)| index);
 
-        match store_app {
-            Some((index, _)) => self.apps[index] = app,
+        match existing_index {
+            Some(index) => self.apps[index] = app,
             None => self.apps.push(app),
         }
     }

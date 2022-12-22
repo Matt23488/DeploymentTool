@@ -18,7 +18,7 @@ type PluginApi = {
     get_apps: RustApiTypes<{}, PublishableApp[]>;
     new_app: RustApiTypes;
     edit_app: RustApiTypes<{ id: number }>;
-    load_app: RustApiTypes<{ id: number | undefined }, PublishableApp>;
+    load_app: RustApiTypes<{ id: number | undefined }, PublishableApp | undefined>;
     save_app: RustApiTypes<{ app: PublishableApp }, boolean>;
 };
 

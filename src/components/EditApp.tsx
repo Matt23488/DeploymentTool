@@ -47,7 +47,8 @@ const useAppData = () => {
 
     useEffect(() => {
         appsPlugin.invoke('load_app', { id }).then(app => {
-            console.log('loaded app', app);
+            if (!app) return;
+
             setId(app.id);
             setName(app.name);
             setLoading(false);
