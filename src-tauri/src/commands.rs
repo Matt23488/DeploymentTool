@@ -1,3 +1,5 @@
+use tauri::Manager;
+
 use crate::dto::{PublishableApp, Store};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
@@ -7,7 +9,7 @@ pub fn greet(name: &str) -> String {
 }
 
 #[tauri::command]
-pub fn get_projects() -> Vec<PublishableApp> {
+pub fn get_apps() -> Vec<PublishableApp> {
     match Store::load_from_disk() {
         Some(store) => store.into_apps(),
         None => Vec::new(),
@@ -40,12 +42,18 @@ pub fn load_app(id: Option<u32>) -> Option<PublishableApp> {
 }
 
 #[tauri::command]
-pub fn save_app(app: PublishableApp) -> bool {
+pub fn save_app(app: PublishableApp, handle: tauri::AppHandle) -> bool {
     
     let mut store = match Store::load_from_disk() {
         Some(store) => store,
         None => return false,
     };
 
-    return store.update_app(app);
+    let result = store.update_app(app);
+
+    match handle.emit_to("app_list", "refresh_apps", ()) {
+        _ => {}
+    }
+
+    result
 }

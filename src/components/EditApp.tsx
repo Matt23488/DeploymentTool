@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import invokeRust, { DeploymentPath, PublishableApp } from '../rustApi';
+import { DeploymentPath, invokeRust } from '../rustApi';
 import { LoaderHookReturn, withLoader } from './hoc';
 
 const EditApp = ({ name: [name, setName], deploymentPaths: [deploymentPaths, setDeploymentPaths], saveApp }: EditAppProps) => {

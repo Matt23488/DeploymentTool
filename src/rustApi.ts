@@ -1,4 +1,5 @@
 import { invoke } from '@tauri-apps/api';
+import { EventCallback, listen } from '@tauri-apps/api/event';
 import Utils from './Utils';
 
 export type PublishableApp = {
@@ -37,6 +38,17 @@ type NoArgCalls = {
         : never;
 }[RustCalls];
 
+type RustEventApi = {
+    refresh_apps: {};
+};
+type RustEvents = keyof RustEventApi;
+type NoArgEvents = {
+    [Key in RustEvents]:
+        Utils.Types.Equals<RustEventApi[Key], {}> extends true
+        ? Key
+        : never;
+}[RustEvents];
+
 type InvokeRustArgs<T extends RustCalls> =
     T extends NoArgCalls
     ? [ cmd: T ]
@@ -44,6 +56,6 @@ type InvokeRustArgs<T extends RustCalls> =
 
 type InvokeRustReturn<T extends RustCalls> = Promise<RustApi[T]['return']>;
 
-const invokeRust = <T extends RustCalls>(...args: InvokeRustArgs<T>): InvokeRustReturn<T> => invoke(args[0], args[1]);
+export const invokeRust = <T extends RustCalls>(...args: InvokeRustArgs<T>): InvokeRustReturn<T> => invoke(args[0], args[1]);
 
-export default invokeRust;
+export const listenRust = <T extends RustEvents>(event: T, callback: EventCallback<RustEventApi[T]>) => listen(event, callback);

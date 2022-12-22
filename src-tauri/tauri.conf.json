@@ -54,7 +54,7 @@
     },
     "windows": [
       {
-        "label": "42069",
+        "label": "app_list",
         "fullscreen": false,
         "height": 600,
         "resizable": true,
