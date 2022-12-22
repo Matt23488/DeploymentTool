@@ -38,6 +38,8 @@ namespace Utils {
             } as StringUnion<Values>);
         };
 
+        export type ReactStateHook<T> = [T, (value: T) => void];
+
         export namespace Tuples {
 
             export type Concat<A extends unknown[], B extends unknown[]> = [...a: A, ...b: B];

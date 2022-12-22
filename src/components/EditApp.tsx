@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
-import { DeploymentPath, invokeRust } from '../rustApi';
+import * as appsPlugin from '../rustApi/apps';
+import { DeploymentPath } from '../rustApi/apps';
+import Utils from '../Utils';
 import { LoaderHookReturn, withLoader } from './hoc';
 
 const EditApp = ({ name: [name, setName], deploymentPaths: [deploymentPaths, setDeploymentPaths], saveApp }: EditAppProps) => {
@@ -12,14 +14,14 @@ const EditApp = ({ name: [name, setName], deploymentPaths: [deploymentPaths, set
     return (
         <div>
             <h1>New App</h1>
-            <div>
+            <div className="row">
                 <button onClick={saveChangesOnClick}>Save Changes</button>
             </div>
-            <div>
+            <div className="row">
                 <h2>Name</h2>
                 <input type="text" value={name} onChange={e => setName(e.target.value)} />
             </div>
-            <div>
+            <div className="row">
                 <h2>Deployment Paths <button className="sm">+</button></h2>
             </div>
         </div>
@@ -28,12 +30,10 @@ const EditApp = ({ name: [name, setName], deploymentPaths: [deploymentPaths, set
 
 type EditAppProps = {
     id?: number;
-    name: StateHook<string>;
-    deploymentPaths: StateHook<DeploymentPath[]>;
+    name: Utils.Types.ReactStateHook<string>;
+    deploymentPaths: Utils.Types.ReactStateHook<DeploymentPath[]>;
     saveApp: () => Promise<boolean>;
 };
-
-type StateHook<T> = [T, (value: T) => void];
 
 const useAppData = () => {
     const [loading, setLoading] = useState(true);
@@ -46,7 +46,7 @@ const useAppData = () => {
     const [deploymentPaths, setDeploymentPaths] = useState([] as DeploymentPath[]);
 
     useEffect(() => {
-        invokeRust('load_app', { id }).then(app => {
+        appsPlugin.invoke('load_app', { id }).then(app => {
             console.log('loaded app', app);
             setId(app.id);
             setName(app.name);
@@ -62,7 +62,7 @@ const useAppData = () => {
             deployment_paths: deploymentPaths,
         };
         
-        return invokeRust('save_app', { app });
+        return appsPlugin.invoke('save_app', { app });
     };
 
     return {

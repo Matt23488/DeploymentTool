@@ -2,6 +2,9 @@ use std::{path::{Path, PathBuf}, fs};
 
 use serde::{Serialize, Deserialize};
 
+pub mod apps_store;
+pub mod settings_store;
+
 const APP_NAME: &str = "rust_deployment_tool";
 pub trait Storable {
     fn file_name() -> &'static str;
@@ -28,7 +31,7 @@ where
     }
 }
 
-pub fn save_to_disk<'de, T>(store: &T) -> bool
+pub fn save_to_disk<'de, T>(store: &'de T) -> bool
 where
     T: Serialize + Deserialize<'de> + Storable,
 {

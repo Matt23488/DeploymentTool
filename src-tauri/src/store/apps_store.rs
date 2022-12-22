@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::store::Storable;
+use super::Storable;
 
 #[derive(Serialize, Deserialize)]
 pub struct AppsStore {
@@ -13,7 +13,7 @@ impl Storable for AppsStore {
     }
 
     fn default_text() -> &'static str {
-        "{\"apps\":[]}"
+        r#"{"apps":[]}"#
     }
 }
 
@@ -30,10 +30,9 @@ impl AppsStore {
     pub fn update_app(&mut self, app: PublishableApp) {
         let store_app = self.apps.iter_mut().enumerate().find(|(_, a)| { a.id() == app.id() });
 
-        if let Some((index, _)) = store_app {
-            self.apps[index] = app;
-        } else {
-            self.apps.push(app);
+        match store_app {
+            Some((index, _)) => self.apps[index] = app,
+            None => self.apps.push(app),
         }
     }
 
