@@ -8,7 +8,7 @@ const DTRoutes = () => {
     return (
         <Routes>
             <Route index element={<AppListLoader />} />
-            <Route path="edit_app/:appName?" element={<EditAppLoader />} />
+            <Route path="edit_app/:appId?" element={<EditAppLoader />} />
             <Route path="settings" element={<SettingsLoader />} />
         </Routes>
     );

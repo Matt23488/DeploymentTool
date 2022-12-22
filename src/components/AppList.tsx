@@ -5,15 +5,21 @@ import * as settingsPlugin from '../rustApi/settings';
 import { PublishableApp } from '../rustApi/apps';
 import { LoaderHookReturn, withLoader } from './hoc';
 
-const App = ({ app }: AppProps) => {
-    return <div>{app.id}: {app.name}</div>;
+const App = ({ app, onEditApp }: AppProps) => {
+    return (
+        <div>
+            <span>{app.id}: {app.name}</span>
+            <button onClick={onEditApp}>Edit</button>
+        </div>
+    );
 };
 
 type AppProps = {
     app: PublishableApp;
+    onEditApp: () => void;
 };
 
-const AppList = ({ apps, onNewApp, onOpenSettings }: AppListProps) => {
+const AppList = ({ apps, onNewApp, onOpenSettings, onEditApp }: AppListProps) => {
     return (
         <div>
             <div className="row">
@@ -21,7 +27,7 @@ const AppList = ({ apps, onNewApp, onOpenSettings }: AppListProps) => {
             </div>
             <h1>App List <button className="sm" onClick={onNewApp}>+</button></h1>
             <div>
-                {apps.map(app => <App key={app.id} app={app} />)}
+                {apps.map(app => <App key={app.id} app={app} onEditApp={() => onEditApp(app.id)} />)}
             </div>
         </div>
     );
@@ -31,6 +37,7 @@ type AppListProps = {
     apps: PublishableApp[];
     onNewApp: () => void;
     onOpenSettings: () => void;
+    onEditApp: (id: number) => void;
 };
 
 const useAppListData = () => {
@@ -61,12 +68,14 @@ const useAppListData = () => {
     
     const onNewApp = () => appsPlugin.invoke('new_app');
     const onOpenSettings = () => settingsPlugin.invoke('open_settings');
+    const onEditApp = (id: number) => appsPlugin.invoke('edit_app', { id });
 
     return {
         loading,
         apps,
         onNewApp,
         onOpenSettings,
+        onEditApp,
     } satisfies LoaderHookReturn<AppListProps>;
 };
 
