@@ -8,6 +8,8 @@ use tauri::{
 
 use crate::store::{apps_store::{PublishableApp, AppsStore}, load_from_disk, save_to_disk};
 
+use super::PluginEventEmitter;
+
 pub struct AppsPlugin<R>
 where
     R: Runtime
@@ -61,7 +63,8 @@ fn save_app<R: Runtime>(app: PublishableApp, handle: AppHandle<R>) -> bool {
 
     store.update_app(app);
 
-    handle.emit_to("app_list", "refresh_apps", ()).unwrap_or_default();
+    PluginEventEmitter::<AppsEvent>::emit(&handle, AppsEvent::RefreshApps);
+    
     save_to_disk(&store)
 }
 
@@ -86,5 +89,20 @@ where
 
     fn extend_api(&mut self, invoke: Invoke<R>) {
         (self.invoke_handler)(invoke);
+    }
+}
+
+enum AppsEvent {
+    RefreshApps
+}
+
+impl<R> PluginEventEmitter<AppsEvent> for tauri::AppHandle<R>
+where
+    R: Runtime
+{
+    fn emit(&self, event: AppsEvent) {
+        match event {
+            AppsEvent::RefreshApps => self.emit_to("app_list", "refresh_apps", ()),
+        }.unwrap_or_default();
     }
 }
