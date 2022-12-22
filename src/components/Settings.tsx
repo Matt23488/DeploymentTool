@@ -61,15 +61,12 @@ const useSettingsData = () => {
         settingsPlugin.invoke('save_settings', { store });
     };
 
-    const getOnBrowsePath = (type: PathType) => () => {
-        fsPlugin.once('directory_selected', event => {
-            if (!event.payload) return;
+    const getOnBrowsePath = (type: PathType) => async () => {
+        const path = await fsPlugin.browseDirectory();
+        if (!path) return;
 
-            const setPath = type === 'input' ? setInputPath : setOutputPath;
-            setPath(event.payload);
-        });
-
-        fsPlugin.invoke('browse_directory');
+        const setPath = type === 'input' ? setInputPath : setOutputPath;
+        setPath(path);
     };
 
     return {

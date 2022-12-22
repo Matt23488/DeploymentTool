@@ -75,7 +75,7 @@ impl PublishableApp {
 
 #[derive(Serialize, Deserialize)]
 pub struct Deployment {
-    date: String,
+    instance: DeploymentInstance,
 }
 
 #[derive(Serialize, Deserialize)]

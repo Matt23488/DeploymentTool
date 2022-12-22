@@ -6,8 +6,6 @@ type PluginApi = {
     browse_directory: RustApiTypes;
 };
 
-export type PathType = 'input' | 'output';
-
 type PluginEvents = {
     directory_selected: string | undefined;
 };
@@ -15,3 +13,8 @@ type PluginEvents = {
 export const invoke = getInvokeFn<PluginApi>(plugin);
 export const listen = getListenFn<PluginEvents>(plugin);
 export const once = getOnceFn<PluginEvents>(plugin);
+
+export const browseDirectory = () => new Promise<string | undefined>(resolve => {
+    once('directory_selected', event => resolve(event.payload));
+    invoke('browse_directory');
+});
