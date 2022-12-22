@@ -13,7 +13,7 @@ type AppProps = {
 const AppList = ({ apps, onNewApp }: AppListProps) => {
     return (
         <div>
-            <h1>App List <button onClick={onNewApp}>+</button></h1>
+            <h1>App List <button className="sm" onClick={onNewApp}>+</button></h1>
             <div>
                 {apps.map(app => <App key={app.id} app={app} />)}
             </div>

@@ -1,6 +1,15 @@
 use tauri::Manager;
 
-use crate::dto::{PublishableApp, Store};
+use crate::{
+    dto::{
+        PublishableApp,
+        AppsStore
+    },
+    store::{
+        load_from_disk,
+        save_to_disk
+    }
+};
 
 // Learn more about Tauri commands at https://tauri.app/v1/guides/features/command
 #[tauri::command]
@@ -10,7 +19,7 @@ pub fn greet(name: &str) -> String {
 
 #[tauri::command]
 pub fn get_apps() -> Vec<PublishableApp> {
-    match Store::load_from_disk() {
+    match load_from_disk::<AppsStore>() {
         Some(store) => store.into_apps(),
         None => Vec::new(),
     }
@@ -32,8 +41,7 @@ pub async fn new_app(handle: tauri::AppHandle) {
 
 #[tauri::command]
 pub fn load_app(id: Option<u32>) -> Option<PublishableApp> {
-    let store = Store::load_from_disk().unwrap(); // TODO: Fix this
-    // let new_app = store.new_app();
+    let store = load_from_disk::<AppsStore>()?;
 
     match id {
         Some(id) => store.into_apps().into_iter().find(|app| { app.id() == &id }),
@@ -44,16 +52,13 @@ pub fn load_app(id: Option<u32>) -> Option<PublishableApp> {
 #[tauri::command]
 pub fn save_app(app: PublishableApp, handle: tauri::AppHandle) -> bool {
     
-    let mut store = match Store::load_from_disk() {
+    let mut store = match load_from_disk::<AppsStore>() {
         Some(store) => store,
         None => return false,
     };
 
-    let result = store.update_app(app);
+    store.update_app(app);
 
-    match handle.emit_to("app_list", "refresh_apps", ()) {
-        _ => {}
-    }
-
-    result
+    handle.emit_to("app_list", "refresh_apps", ()).unwrap_or_default();
+    save_to_disk(&store)
 }

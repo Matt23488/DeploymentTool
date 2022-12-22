@@ -20,7 +20,7 @@ const EditApp = ({ name: [name, setName], deploymentPaths: [deploymentPaths, set
                 <input type="text" value={name} onChange={e => setName(e.target.value)} />
             </div>
             <div>
-                <h2>Deployment Paths <button>+</button></h2>
+                <h2>Deployment Paths <button className="sm">+</button></h2>
             </div>
         </div>
     )
