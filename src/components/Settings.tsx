@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import * as settingsPlugin from '../rustApi/settings';
-import Utils from '../Utils';
+import * as fsPlugin from '../rustApi/fs';
 import { LoaderHookReturn, withLoader } from './hoc';
 
 const Settings = ({
-    inputPath: [inputPath, setInputPath],
-    outputPath: [outputPath, setOutputPath],
+    inputPath,
+    outputPath,
+    getOnBrowsePath,
     saveSettings,
 }: SettingsProps) => {
     return (
@@ -16,19 +17,24 @@ const Settings = ({
             </div>
             <div className="row">
                 <label>Input Path:</label>
-                <input type="text" value={inputPath} onChange={e => setInputPath(e.target.value)} />
+                <span>{inputPath}</span>
+                <button onClick={getOnBrowsePath('input')}>Browse</button>
             </div>
             <div className="row">
                 <label>Output Path:</label>
-                <input type="text" value={outputPath} onChange={e => setOutputPath(e.target.value)} />
+                <span>{outputPath}</span>
+                <button onClick={getOnBrowsePath('output')}>Browse</button>
             </div>
         </div>
     )
 };
 
+type PathType = 'input' | 'output';
+
 type SettingsProps = {
-    inputPath: Utils.Types.ReactStateHook<string>;
-    outputPath: Utils.Types.ReactStateHook<string>;
+    inputPath: string;
+    outputPath: string;
+    getOnBrowsePath: (type: PathType) => () => void;
     saveSettings: () => void;
 };
 
@@ -55,10 +61,22 @@ const useSettingsData = () => {
         settingsPlugin.invoke('save_settings', { store });
     };
 
+    const getOnBrowsePath = (type: PathType) => () => {
+        fsPlugin.once('directory_selected', event => {
+            if (!event.payload) return;
+
+            const setPath = type === 'input' ? setInputPath : setOutputPath;
+            setPath(event.payload);
+        });
+
+        fsPlugin.invoke('browse_directory');
+    };
+
     return {
         loading,
-        inputPath: [inputPath, setInputPath],
-        outputPath: [outputPath, setOutputPath],
+        inputPath,
+        outputPath,
+        getOnBrowsePath,
         saveSettings,
     } satisfies LoaderHookReturn<SettingsProps>;
 };

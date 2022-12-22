@@ -15,7 +15,7 @@ where
 }
 
 #[tauri::command]
-pub async fn open_settings<R: Runtime>(handle: AppHandle<R>) {
+async fn open_settings<R: Runtime>(handle: AppHandle<R>) {
     tauri::WindowBuilder::new(
         &handle,
         "settings",
@@ -24,12 +24,12 @@ pub async fn open_settings<R: Runtime>(handle: AppHandle<R>) {
 }
 
 #[tauri::command]
-pub fn load_settings() -> SettingsStore {
+fn load_settings() -> SettingsStore {
     load_from_disk::<SettingsStore>().unwrap()
 }
 
 #[tauri::command]
-pub fn save_settings(store: SettingsStore) -> bool {
+fn save_settings(store: SettingsStore) -> bool {
     save_to_disk(&store)
 }
 

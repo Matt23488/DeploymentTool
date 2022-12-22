@@ -1,5 +1,4 @@
 import { useEffect, useState } from 'react';
-import { listenRust } from '../rustApi';
 import * as appsPlugin from '../rustApi/apps';
 import * as settingsPlugin from '../rustApi/settings';
 import { PublishableApp } from '../rustApi/apps';
@@ -54,7 +53,7 @@ const useAppListData = () => {
             });
         };
 
-        const unlisten = listenRust('refresh_apps', () => {
+        const unlisten = appsPlugin.listen('refresh_apps', () => {
             loadApps();
         });
 

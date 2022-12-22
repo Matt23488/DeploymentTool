@@ -1,7 +1,8 @@
 import { invoke } from '@tauri-apps/api';
+import { EventCallback, listen, once } from '@tauri-apps/api/event';
 import Utils from '../Utils';
 
-export type RustApiTypes<Args extends {}, Return = void> = {
+export type RustApiTypes<Args extends {} = {}, Return = void> = {
     args: Args;
     return: Return;
 };
@@ -27,3 +28,5 @@ type InvokeApiReturn<Api extends PluginApi, Call extends string & keyof Api> = P
 type InvokeApiFn<Api extends PluginApi> = <Call extends string & keyof Api>(...args: InvokeApiArgs<Api, Call>) => InvokeApiReturn<Api, Call>;
 
 export const getInvokeFn = <Api extends PluginApi>(pluginName: string): InvokeApiFn<Api> => <Call extends string & keyof Api>(...args: InvokeApiArgs<Api, Call>): InvokeApiReturn<Api, Call> => invoke(`plugin:${pluginName}|${args[0]}`, args[1]);
+export const getListenFn = <EventsApi extends {}>(pluginName: string) => <Event extends string & keyof EventsApi>(event: Event, callback: EventCallback<EventsApi[Event]>) => listen(`plugin:${pluginName}__${event}`, callback);
+export const getOnceFn = <EventsApi extends {}>(pluginName: string) => <Event extends string & keyof EventsApi>(event: Event, callback: EventCallback<EventsApi[Event]>) => once(`plugin:${pluginName}__${event}`, callback);

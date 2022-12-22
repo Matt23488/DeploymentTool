@@ -8,7 +8,7 @@ export type SettingsStore = {
 };
 
 type PluginApi = {
-    open_settings: RustApiTypes<{}>;
+    open_settings: RustApiTypes;
     load_settings: RustApiTypes<{}, SettingsStore>;
     save_settings: RustApiTypes<{ store: SettingsStore }, boolean>;
 };

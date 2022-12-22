@@ -63,7 +63,7 @@ fn save_app<R: Runtime>(app: PublishableApp, handle: AppHandle<R>) -> bool {
 
     store.update_app(app);
 
-    PluginEventEmitter::<AppsEvent>::emit(&handle, AppsEvent::RefreshApps);
+    PluginEventEmitter::emit(&handle, AppsEvent::RefreshApps);
     
     save_to_disk(&store)
 }
@@ -79,12 +79,14 @@ where
     }
 }
 
+const PLUGIN_NAME: &str = "tauri-plugin-apps";
+
 impl<R> Plugin<R> for AppsPlugin<R>
 where
     R: Runtime
 {
     fn name(&self) -> &'static str {
-        "tauri-plugin-apps"
+        PLUGIN_NAME
     }
 
     fn extend_api(&mut self, invoke: Invoke<R>) {
@@ -100,9 +102,16 @@ impl<R> PluginEventEmitter<AppsEvent> for tauri::AppHandle<R>
 where
     R: Runtime
 {
+    fn name(&self) -> &'static str {
+        PLUGIN_NAME
+    }
+
     fn emit(&self, event: AppsEvent) {
         match event {
-            AppsEvent::RefreshApps => self.emit_to("app_list", "refresh_apps", ()),
+            AppsEvent::RefreshApps => {
+                let event_name = PluginEventEmitter::<AppsEvent>::event_name(self, "refresh_apps");
+                self.emit_to("app_list", event_name.as_str(), ())
+            }
         }.unwrap_or_default();
     }
 }
