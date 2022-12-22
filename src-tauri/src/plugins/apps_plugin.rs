@@ -63,7 +63,7 @@ fn save_app<R: Runtime>(app: PublishableApp, handle: AppHandle<R>) -> bool {
 
     store.update_app(app);
 
-    PluginEventEmitter::emit(&handle, AppsEvent::RefreshApps);
+    handle.emit(AppsEvent::RefreshApps);
     
     save_to_disk(&store)
 }

@@ -18,16 +18,13 @@ where
 fn browse_directory<R: Runtime>(handle: tauri::AppHandle<R>, window: tauri::Window<R>) {
     tauri::api::dialog::FileDialogBuilder::default()
         .pick_folder(move |path_buf| {
-            PluginEventEmitter::emit(
-                &handle,
-                FsEvent::DirectorySelected {
-                    window_label: window.label(),
-                    directory: match path_buf {
-                        Some(path) => Some(path.to_string_lossy().to_string()),
-                        None => None,
-                    },
+            handle.emit(FsEvent::DirectorySelected {
+                window_label: window.label(),
+                directory: match path_buf {
+                    Some(path) => Some(path.to_string_lossy().to_string()),
+                    None => None,
                 }
-            )
+            });
         });
 }
 
