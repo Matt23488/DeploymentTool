@@ -19,11 +19,11 @@ namespace Utils {
 
         export type Satisfies<Keys extends PropertyKey, Values, Specific extends Record<Keys, Values>> = Pick<Specific, Keys>;
 
-        export interface StringUnion<Values extends string = string> {
+        export type StringUnion<Values extends string = string> = {
             values: Values[];
             guard: (value: string) => value is Values;
             type: Values;
-        }
+        };
 
         export const makeStringUnion = <Values extends string>(...values: Values[]) => {
             Object.freeze(values);
