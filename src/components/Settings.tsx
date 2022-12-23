@@ -8,26 +8,24 @@ const Settings = ({
     outputPath,
     getOnBrowsePath,
     saveSettings,
-}: SettingsProps) => {
-    return (
-        <div>
-            <h1>Settings</h1>
-            <div className="row">
-                <button onClick={saveSettings}>Save</button>
-            </div>
-            <div className="row">
-                <label>Input Path:</label>
-                <span>{inputPath}</span>
-                <button onClick={getOnBrowsePath('input')}>Browse</button>
-            </div>
-            <div className="row">
-                <label>Output Path:</label>
-                <span>{outputPath}</span>
-                <button onClick={getOnBrowsePath('output')}>Browse</button>
-            </div>
+}: SettingsProps) => (
+    <div>
+        <h1>Settings</h1>
+        <div className="row">
+            <button onClick={saveSettings}>Save</button>
         </div>
-    )
-};
+        <div className="row">
+            <label>Input Path:</label>
+            <span>{inputPath}</span>
+            <button onClick={getOnBrowsePath('input')}>Browse</button>
+        </div>
+        <div className="row">
+            <label>Output Path:</label>
+            <span>{outputPath}</span>
+            <button onClick={getOnBrowsePath('output')}>Browse</button>
+        </div>
+    </div>
+);
 
 type PathType = 'input' | 'output';
 
@@ -62,7 +60,8 @@ const useSettingsData = () => {
     };
 
     const getOnBrowsePath = (type: PathType) => async () => {
-        const path = await fsPlugin.browseDirectory();
+        const startingDir = type == 'input' ? inputPath : outputPath;
+        const path = await fsPlugin.browseDirectory({ Other: startingDir });
         if (!path) return;
 
         const setPath = type === 'input' ? setInputPath : setOutputPath;

@@ -5,8 +5,10 @@ const plugin = 'tauri-plugin-fs';
 type PluginApi = {};
 type PluginEvents = {};
 
+type StartingDirectory = 'Input' | 'Output' | { Other: string };
+
 type HiddenPluginApi = {
-    browse_directory: RustApiTypes;
+    browse_directory: RustApiTypes<{ startingDirectory: StartingDirectory }>;
 };
 
 type HiddenPluginEvents = {
@@ -21,7 +23,7 @@ const hiddenInvoke = getInvokeFn<HiddenPluginApi>(plugin);
 const hiddenListen = getListenFn<HiddenPluginEvents>(plugin);
 const hiddenOnce = getOnceFn<HiddenPluginEvents>(plugin);
 
-export const browseDirectory = () => new Promise<string | undefined>(resolve => {
+export const browseDirectory = (startingDirectory: StartingDirectory) => new Promise<string | undefined>(resolve => {
     hiddenOnce('directory_selected', event => resolve(event.payload));
-    hiddenInvoke('browse_directory');
+    hiddenInvoke('browse_directory', { startingDirectory });
 });

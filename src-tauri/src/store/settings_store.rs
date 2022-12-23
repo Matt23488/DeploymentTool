@@ -8,6 +8,16 @@ pub struct SettingsStore {
     output_path: String,
 }
 
+impl SettingsStore {
+    pub fn input_path(&self) -> &str {
+        self.input_path.as_str()
+    }
+
+    pub fn output_path(&self) -> &str {
+        self.output_path.as_str()
+    }
+}
+
 impl Storable for SettingsStore {
     fn file_name() -> &'static str {
         "settings.json"

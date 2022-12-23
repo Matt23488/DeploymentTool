@@ -12,12 +12,12 @@ const DeploymentPath_ = ({
     outputPath: [outputPath, setOutputPath],
 }: DeploymentPathProps) => {
 
-    type PathType = 'input' | 'output';
+    type PathType = 'Input' | 'Output';
     const getOnBrowse = (type: PathType) => async () => {
-        const path = await fsPlugin.browseDirectory();
+        const path = await fsPlugin.browseDirectory(type);
         if (!path) return;
 
-        const setPath = type === 'input' ? setInputPath : setOutputPath;
+        const setPath = type === 'Input' ? setInputPath : setOutputPath;
         setPath(path);
     };
 
@@ -27,10 +27,10 @@ const DeploymentPath_ = ({
             <input type="text" value={name} onChange={e => setName(e.target.value)} />
             <label>Input Path:</label>
             <span>{inputPath}</span>
-            <button onClick={getOnBrowse('input')}>Browse</button>
+            <button onClick={getOnBrowse('Input')}>Browse</button>
             <label>Output Path:</label>
             <span>{outputPath}</span>
-            <button onClick={getOnBrowse('output')}>Browse</button>
+            <button onClick={getOnBrowse('Output')}>Browse</button>
         </div>
     )
 };
@@ -41,28 +41,26 @@ type DeploymentPathProps = {
     outputPath: Utils.Types.ReactStateHook<string>;
 };
 
-const EditApp = ({ name: [name, setName], deploymentPaths: [deploymentPaths, addDeploymentPath], saveApp }: EditAppProps) => {
-    return (
-        <div>
-            <h1>App Details</h1>
-            <div className="row">
-                <button onClick={saveApp}>Save Changes</button>
-            </div>
-            <div className="row">
-                <h2>Name</h2>
-                <input type="text" value={name} onChange={e => setName(e.target.value)} />
-            </div>
-            <h2>Deployment Paths <button className="sm" onClick={addDeploymentPath}>+</button></h2>
-            {deploymentPaths.map(([dp, sdp], i) => {
-                const setName = (name: string) => sdp({ ...dp, name });
-                const setInputPath = (input_path: string) => sdp({ ...dp, input_path });
-                const setOutputPath = (output_path: string) => sdp({ ...dp, output_path });
-
-                return <DeploymentPath_ key={i} name={[dp.name, setName]} inputPath={[dp.input_path, setInputPath]} outputPath={[dp.output_path, setOutputPath]} />;
-            })}
+const EditApp = ({ name: [name, setName], deploymentPaths: [deploymentPaths, addDeploymentPath], saveApp }: EditAppProps) => (
+    <div>
+        <h1>App Details</h1>
+        <div className="row">
+            <button onClick={saveApp}>Save Changes</button>
         </div>
-    )
-};
+        <div className="row">
+            <h2>Name</h2>
+            <input type="text" value={name} onChange={e => setName(e.target.value)} />
+        </div>
+        <h2>Deployment Paths <button className="sm" onClick={addDeploymentPath}>+</button></h2>
+        {deploymentPaths.map(([dp, sdp], i) => {
+            const setName = (name: string) => sdp({ ...dp, name });
+            const setInputPath = (input_path: string) => sdp({ ...dp, input_path });
+            const setOutputPath = (output_path: string) => sdp({ ...dp, output_path });
+
+            return <DeploymentPath_ key={i} name={[dp.name, setName]} inputPath={[dp.input_path, setInputPath]} outputPath={[dp.output_path, setOutputPath]} />;
+        })}
+    </div>
+);
 
 type EditAppProps = {
     id?: number;

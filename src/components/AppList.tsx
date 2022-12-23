@@ -18,19 +18,17 @@ type AppProps = {
     onEditApp: () => void;
 };
 
-const AppList = ({ apps, onNewApp, onOpenSettings, onEditApp }: AppListProps) => {
-    return (
-        <div>
-            <div className="row">
-                <button onClick={onOpenSettings}>Settings</button>
-            </div>
-            <h1>App List <button className="sm" onClick={onNewApp}>+</button></h1>
-            <div>
-                {apps.map(app => <App key={app.id} app={app} onEditApp={() => onEditApp(app.id)} />)}
-            </div>
+const AppList = ({ apps, onNewApp, onOpenSettings, onEditApp }: AppListProps) => (
+    <div>
+        <div className="row">
+            <button onClick={onOpenSettings}>Settings</button>
         </div>
-    );
-};
+        <h1>App List <button className="sm" onClick={onNewApp}>+</button></h1>
+        <div>
+            {apps.map(app => <App key={app.id} app={app} onEditApp={() => onEditApp(app.id)} />)}
+        </div>
+    </div>
+);
 
 type AppListProps = {
     apps: PublishableApp[];
