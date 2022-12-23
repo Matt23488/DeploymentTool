@@ -1,10 +1,10 @@
 pub mod apps_plugin;
-pub mod settings_plugin;
 pub mod fs_plugin;
+pub mod settings_plugin;
 
 pub use apps_plugin::AppsPlugin;
-pub use settings_plugin::SettingsPlugin;
 pub use fs_plugin::FsPlugin;
+pub use settings_plugin::SettingsPlugin;
 
 pub trait PluginEventEmitter<T> {
     fn emit(&self, event: T);

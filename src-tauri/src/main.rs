@@ -3,12 +3,10 @@
     windows_subsystem = "windows"
 )]
 
-use plugins::{AppsPlugin, SettingsPlugin, FsPlugin};
+use plugins::{AppsPlugin, FsPlugin, SettingsPlugin};
 
-
-mod store;
 mod plugins;
-
+mod store;
 
 fn main() {
     tauri::Builder::default()

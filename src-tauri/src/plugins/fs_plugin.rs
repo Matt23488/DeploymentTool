@@ -1,36 +1,30 @@
-use tauri::{
-    Runtime,
-    plugin::Plugin,
-    Invoke, Manager,
-};
+use tauri::{api::dialog::FileDialogBuilder, plugin::Plugin, Invoke, Manager, Runtime};
 
 use super::PluginEventEmitter;
 
 pub struct FsPlugin<R>
 where
-    R: Runtime
+    R: Runtime,
 {
     invoke_handler: Box<dyn Fn(Invoke<R>) + Send + Sync>,
 }
 
-
 #[tauri::command]
 fn browse_directory<R: Runtime>(handle: tauri::AppHandle<R>, window: tauri::Window<R>) {
-    tauri::api::dialog::FileDialogBuilder::default()
-        .pick_folder(move |path_buf| {
-            handle.emit(FsEvent::DirectorySelected {
-                window_label: window.label(),
-                directory: match path_buf {
-                    Some(path) => Some(path.to_string_lossy().to_string()),
-                    None => None,
-                }
-            });
+    FileDialogBuilder::default().pick_folder(move |path_buf| {
+        handle.emit(FsEvent::DirectorySelected {
+            window_label: window.label(),
+            directory: match path_buf {
+                Some(path) => Some(path.to_string_lossy().to_string()),
+                None => None,
+            },
         });
+    });
 }
 
 impl<R> FsPlugin<R>
 where
-    R: Runtime
+    R: Runtime,
 {
     pub fn new() -> Self {
         Self {
@@ -43,7 +37,7 @@ const PLUGIN_NAME: &str = "tauri-plugin-fs";
 
 impl<R> Plugin<R> for FsPlugin<R>
 where
-    R: Runtime
+    R: Runtime,
 {
     fn name(&self) -> &'static str {
         PLUGIN_NAME
@@ -55,12 +49,15 @@ where
 }
 
 enum FsEvent<'a> {
-    DirectorySelected { window_label: &'a str, directory: Option<String> },
+    DirectorySelected {
+        window_label: &'a str,
+        directory: Option<String>,
+    },
 }
 
 impl<'a, R> PluginEventEmitter<FsEvent<'a>> for tauri::AppHandle<R>
 where
-    R: Runtime
+    R: Runtime,
 {
     fn name(&self) -> &'static str {
         PLUGIN_NAME
@@ -68,10 +65,15 @@ where
 
     fn emit(&self, event: FsEvent) {
         match event {
-            FsEvent::DirectorySelected{ window_label, directory } => {
-                let event_name = PluginEventEmitter::<FsEvent>::event_name(self, "directory_selected");
+            FsEvent::DirectorySelected {
+                window_label,
+                directory,
+            } => {
+                let event_name =
+                    PluginEventEmitter::<FsEvent>::event_name(self, "directory_selected");
                 self.emit_to(window_label, event_name.as_str(), directory)
             }
-        }.unwrap_or_default();
+        }
+        .unwrap_or_default();
     }
 }

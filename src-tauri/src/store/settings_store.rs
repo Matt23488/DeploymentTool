@@ -1,7 +1,6 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use super::Storable;
-
 
 #[derive(Serialize, Deserialize)]
 pub struct SettingsStore {

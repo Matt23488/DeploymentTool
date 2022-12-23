@@ -1,11 +1,15 @@
-use std::{path::{Path, PathBuf}, fs};
+use std::{
+    fs,
+    path::{Path, PathBuf},
+};
 
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 pub mod apps_store;
 pub mod settings_store;
 
 const APP_NAME: &str = "rust_deployment_tool";
+const APP_DATA_PATH: &str = "LOCALAPPDATA";
 pub trait Storable {
     fn file_name() -> &'static str;
     fn default_text() -> &'static str;
@@ -27,7 +31,7 @@ where
 
     match serde_json::from_str(store_json.as_str()) {
         Ok(store) => Some(store),
-        Err(_) => None
+        Err(_) => None,
     }
 }
 
@@ -41,27 +45,28 @@ where
     };
 
     match serde_json::to_string(store) {
-        Ok(json) => {
-            match fs::write(store_path, json) {
-                Ok(_) => true,
-                Err(_) => false,
-            }
-        }
+        Ok(json) => fs::write(store_path, json).is_ok(),
         Err(_) => false,
     }
 }
 
 fn get_store_path(file_name: &str) -> Option<PathBuf> {
-    let app_data = match std::env::vars().find(|(k, _)| k.eq_ignore_ascii_case("LOCALAPPDATA")) {
+    let app_data = match std::env::vars()
+        .find(|(k, _)| k.eq_ignore_ascii_case(APP_DATA_PATH))
+        .map(|(_, v)| v)
+    {
         Some(app_data) => app_data,
         None => return None,
     };
 
-    let app_data_path = Path::new(app_data.1.as_str()).join(APP_NAME);
+    let app_data_path = Path::new(app_data.as_str()).join(APP_NAME);
 
     if !app_data_path.exists() {
         if let Err(_) = fs::create_dir(&app_data_path) {
-            println!("Couldn't create dir {}", app_data_path.to_str().unwrap_or("IDK"));
+            println!(
+                "Couldn't create dir {}",
+                app_data_path.to_str().unwrap_or("IDK")
+            );
             return None;
         }
     }

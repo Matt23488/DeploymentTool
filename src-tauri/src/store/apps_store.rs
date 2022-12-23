@@ -1,4 +1,4 @@
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 
 use super::Storable;
 
@@ -19,7 +19,7 @@ impl Storable for AppsStore {
 
 impl AppsStore {
     pub fn new_app(&self) -> PublishableApp {
-        let id = self.apps.iter().map(|a| { a.id }).max().unwrap_or(0) + 1;
+        let id = self.apps.iter().map(|a| a.id).max().unwrap_or(0) + 1;
         PublishableApp {
             id,
             name: String::new(),
@@ -28,9 +28,11 @@ impl AppsStore {
     }
 
     pub fn update_app(&mut self, app: PublishableApp) {
-        let existing_index = self.apps.iter_mut()
+        let existing_index = self
+            .apps
+            .iter()
             .enumerate()
-            .find(|(_, a)| { a.id == app.id })
+            .find(|(_, a)| a.id == app.id)
             .map(|(index, _)| index);
 
         match existing_index {
@@ -63,7 +65,6 @@ pub struct PublishableApp {
 }
 
 impl PublishableApp {
-
     pub fn id(&self) -> &u32 {
         &self.id
     }
