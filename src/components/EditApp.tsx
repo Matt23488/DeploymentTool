@@ -87,6 +87,7 @@ const useAppData = () => {
 
             setId(app.id);
             setName(app.name);
+            setDeploymentPaths(app.deployment_paths);
             setLoading(false);
         })
     }, []);
